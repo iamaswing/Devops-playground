@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Docker Monitor</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 40px; }
+        h2 { color: #1a202c; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #edf2f7; }
+        th { background: #2d3748; color: white; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.05em; }
+        
+        /* Status Pill Styling */
+        .badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-running { background-color: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
+        .status-other { background-color: #fed7d7; color: #822727; border: 1px solid #feb2b2; }
+    </style>
+</head>
+<body>
+    <h2>Live Container Monitor</h2>
+    <table>
+        <tr>
+            <th>Container Name</th>
+            <th>Status</th>
+            <th>Restart Count</th>
+            <th>Image (Type)</th>
+            <th>Size</th>
+        </tr>
+        {{range .}}
+        <tr>
+            <td><strong>{{.Name}}</strong></td>
+            <td>
+                <span class="badge {{if eq .Status "running"}}status-running{{else}}status-other{{end}}">
+                    {{.Status}}
+                </span>
+            </td>
+            <td>{{.Restarts}}</td>
+            <td><code>{{.Type}}</code></td>
+            <td>{{.Size}}</td>
+        </tr>
+        {{end}}
+    </table>
+</body>
+</html>

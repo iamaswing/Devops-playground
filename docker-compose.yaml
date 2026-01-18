@@ -1,0 +1,33 @@
+services:
+  monitor-dashboard:
+    build: .
+    container_name: go-monitor
+    ports:
+      - "8080:8080"
+    volumes:
+      # This is the magic line that lets your Go app talk to your laptop's Docker engine
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+
+
+  static-site:
+    image: nginx:latest
+    container_name: web-server-independent
+    ports:
+      - "8081:80"  # Map your PC's port 8081 to Nginx's port 80
+    restart: always
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins-ci
+    user: root # Needed to access docker.sock and local volumes
+    ports:
+      - "8082:8080" # Jenkins UI on port 8082
+      - "50000:50000" # Agent communication
+    volumes:
+      - jenkins_data:/var/var/jenkins_home # Persistent volume
+      - /var/run/docker.sock:/var/run/docker.sock # Allows Jenkins to build Docker images
+    restart: always
+
+volumes:
+  jenkins_data: # Defines the persistent volume

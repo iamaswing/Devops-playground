@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Docker Monitor</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; padding: 40px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        th { background: #f1f5f9; color: #475569; padding: 12px 15px; text-align: left; font-size: 12px; text-transform: uppercase; }
+        td { padding: 15px; border-top: 1px solid #f1f5f9; }
+
+        /* Status Circle (Pill) Styling */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 50px; /* This creates the circular/pill shape */
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .up { background-color: #dcfce7; color: #15803d; } /* Green background */
+        .down { background-color: #fee2e2; color: #b91c1c; } /* Red background */
+
+        .indicator { height: 8px; width: 8px; border-radius: 50%; margin-right: 8px; }
+        .indicator-up { background-color: #22c55e; }
+        .indicator-down { background-color: #ef4444; }
+    </style>
+</head>
+<body>
+    <h2>Container Status</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Restarts</th>
+        </tr>
+        {{range .}}
+        <tr>
+            <td><strong>{{.Name}}</strong></td>
+            <td>
+                {{/* Case-insensitive check: matches "running" or "up" */}}
+                {{$status := .Status}}
+                {{$isAlive := or (eq $status "running") (eq $status "up")}}
+                
+                <span class="status-pill {{if $isAlive}}up{{else}}down{{end}}">
+                    <span class="indicator {{if $isAlive}}indicator-up{{else}}indicator-down{{end}}"></span>
+                    {{$status}}
+                </span>
+            </td>
+            <td>{{.Restarts}}</td>
+        </tr>
+        {{end}}
+    </table>
+</body>
+</html>
