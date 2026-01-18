@@ -27,8 +27,8 @@ pipeline {
             steps {
                 // Adding a small sleep to give the container time to start before curling
                 sleep 5
-                sh 'curl -f http://localhost:8080 || exit 1'
-                sh 'curl -f http://localhost:8081 || exit 1'
+                sh 'curl -f http://monitor-dashboard:8080 || exit 1'
+                sh 'curl -f http://static-site:80 || exit 1'
             }
         }
     }
