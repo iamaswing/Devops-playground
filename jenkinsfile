@@ -11,18 +11,15 @@ pipeline {
         stage('Build Image') {
             steps {
                 // --no-cache: Ignores previous build layers, forcing a clean compile of your Go app
-                sh 'docker compose build --no-cache monitor-dashboard'
+                sh 'docker compose -p monitor-app build --no-cache monitor-dashboard'
             }
         }
         
         stage('Deploy') {
             steps {
-                // --force-recreate: Kills the old container and starts a new one 
-                // even if the configuration/image ID appears to be the same.
-                sh 'docker compose up -d --force-recreate monitor-dashboard'
-                
-                // Also refresh your static-site to ensure the invitation changes apply
-                sh 'docker compose up -d --force-recreate static-site'
+                // Use -p monitor-app so it maps to the same 'stack' every time
+                sh 'docker compose -p monitor-app up -d --force-recreate monitor-dashboard'
+                sh 'docker compose -p monitor-app up -d --force-recreate static-site'
             }
         }
         
