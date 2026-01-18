@@ -21,7 +21,9 @@ services:
     restart: always
 
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
     container_name: jenkins-ci
     user: root # Needed to access docker.sock and local volumes
     ports:
