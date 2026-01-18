@@ -26,18 +26,20 @@ pipeline {
         stage('Health Check') {
             steps {
                 script {
-                  // 1. Get the Jenkins Container ID automatically
-                  def jenkinsId = sh(script: 'hostname', returnStdout: true).trim()
+                    // 1. Get the Jenkins Container ID automatically
+                    def jenkinsId = sh(script: 'hostname', returnStdout: true).trim()
             
-                  // 2. Connect Jenkins to the network (ignore error if already connected)
-                  sh "docker network connect monitor-app_default ${jenkinsId} || true"
+                    // 2. Connect Jenkins to the network (ignore error if already connected)
+                    sh "docker network connect monitor-app_default ${jenkinsId} || true"
             
-                  // 3. Wait for Nginx and Go to start up
-                  echo "Waiting 10s for service discovery to propagate..."
-                // Adding a small sleep to give the container time to start before curling
-                sleep 10
-                sh 'curl -f http://monitor-dashboard:8080 || exit 1'
-                sh 'curl -f http://static-site:80 || exit 1'
+                    // 3. Wait for Nginx and Go to start up
+                    echo "Waiting 10s for service discovery to propagate..."
+                    sleep 10
+                    
+                    // 4. Run tests
+                    sh 'curl -f http://monitor-dashboard:8080 || exit 1'
+                    sh 'curl -f http://static-site:80 || exit 1'
+                } // This was the missing closing bracket for 'script'
             }
         }
     }
