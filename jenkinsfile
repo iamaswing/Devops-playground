@@ -10,14 +10,14 @@ pipeline {
         
         stage('Build Image') {
             steps {
-                // --no-cache: Ignores previous build layers, forcing a clean compile of your Go app
-                sh 'docker compose -p monitor-app build --no-cache monitor-dashboard'
+                // Build ALL services defined in docker-compose
+                sh 'docker compose -p monitor-app build --no-cache'
             }
         }
         
         stage('Deploy') {
             steps {
-                // Use -p monitor-app so it maps to the same 'stack' every time
+                // Start everything in the 'monitor-app' project
                 sh 'docker compose -p monitor-app up -d --force-recreate monitor-dashboard'
                 sh 'docker compose -p monitor-app up -d --force-recreate static-site'
             }
