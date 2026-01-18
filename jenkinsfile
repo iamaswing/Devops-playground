@@ -4,27 +4,34 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // In a real scenario, this pulls from your GitHub repo
                 checkout scm
             }
         }
         
         stage('Build Image') {
             steps {
-                sh 'docker-compose build monitor-dashboard'
+                // --no-cache: Ignores previous build layers, forcing a clean compile of your Go app
+                sh 'docker-compose build --no-cache monitor-dashboard'
             }
         }
         
         stage('Deploy') {
             steps {
-                sh 'docker-compose up -d monitor-dashboard'
+                // --force-recreate: Kills the old container and starts a new one 
+                // even if the configuration/image ID appears to be the same.
+                sh 'docker-compose up -d --force-recreate monitor-dashboard'
+                
+                // Also refresh your static-site to ensure the invitation changes apply
+                sh 'docker-compose up -d --force-recreate static-site'
             }
         }
         
         stage('Health Check') {
             steps {
-                // Verify the dashboard is actually up
+                // Adding a small sleep to give the container time to start before curling
+                sleep 5
                 sh 'curl -f http://localhost:8080 || exit 1'
+                sh 'curl -f http://localhost:8081 || exit 1'
             }
         }
     }
